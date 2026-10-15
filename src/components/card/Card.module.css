@@ -1,0 +1,102 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background-color: #ffffff;
+  margin-top: 20px;
+  color: #0f172a;
+}
+
+.imageWrapper {
+  position: relative;
+  overflow: hidden;
+  background-color: #f3f4f6;
+}
+
+.image {
+  display: block;
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px;
+}
+
+.contentRow {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  justify-content: space-between;
+}
+
+.contentPrice {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  gap: 6px;
+}
+
+.address {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  color: #0f172a;
+  font-size: 12px;
+  margin: 0;
+}
+
+.name {
+  margin: 0;
+  color: #0f172a;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.price {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.priceBefore {
+  font-weight: 400;
+  font-size: 12px;
+  align-items: flex-end;
+  display: flex;
+  text-decoration-line: line-through;
+  align-self: stretch;
+  color: #404942;
+}
+
+.seller {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  color: #404942;
+  font-size: 12px;
+  margin: 0;
+  font-weight: 900;
+}
+
+.rating {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #d97706;
+  font-size: 13px;
+}
+
+.sold {
+  color: #6b7280;
+}
+
+.card button {
+  width: 100%;
+}
