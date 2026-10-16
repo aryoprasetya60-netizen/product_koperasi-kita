@@ -1,11 +1,15 @@
 import Button from "./components/button/Button";
 import Card from "./components/card/Card";
+import Header from "./components/header/Header";
 import Images from "./assets/images_1.jpg";
 import "./App.css";
 
 function App() {
   return (
     <section>
+      <div>
+        <Header />
+      </div>
       <div>
         <Button name="Semua" variant="category" active></Button>
 
@@ -59,6 +63,11 @@ function App() {
           rating={4.8}
           sold={120}
         />
+      </div>
+      <div className="section-bottom-showcase-link">
+        <strong>
+          Jelajahi 1.200+ Produk Anggota di Etalase Komunitas -&gt;
+        </strong>
       </div>
     </section>
   );

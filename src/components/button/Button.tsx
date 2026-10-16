@@ -14,7 +14,6 @@ function Button({ name, variant = "category", active = false }: ButtonProps) {
   ]
     .filter(Boolean)
     .join(" ");
-  console.log("Card dirender:", name);
   return (
     <button type="button" className={className}>
       {variant === "buy" && (
