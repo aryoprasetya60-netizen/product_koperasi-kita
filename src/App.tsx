@@ -2,6 +2,9 @@ import Button from "./components/button/Button";
 import Card from "./components/card/Card";
 import Header from "./components/header/Header";
 import Images from "./assets/images_1.jpg";
+import Images2 from "./assets/images_2.jpg";
+import Images3 from "./assets/images_3.jpg";
+import Images4 from "./assets/images_4.jpg";
 import "./App.css";
 
 function App() {
@@ -34,34 +37,34 @@ function App() {
           sold={340}
         />
         <Card
-          image={Images}
+          image={Images2}
           address="Pekalongan"
-          name="Kopi Arabika Gayo Organik…"
-          price="Rp 68.000"
-          priceBefore="Rp 85.000"
-          seller="UMKM Berkah Kopi Mandiri"
-          rating={4.8}
-          sold={120}
+          name="Kain Batik Tulis Motif Truntum"
+          price="Rp 380.000"
+          priceBefore="Rp 450.000"
+          seller="Sanggar Batik Lestari"
+          rating={5.0}
+          sold={128}
         />
         <Card
-          image={Images}
+          image={Images3}
           address="Flores, NTT"
-          name="Kopi Arabika Gayo Organik…"
-          price="Rp 68.000"
-          priceBefore="Rp 85.000"
-          seller="UMKM Berkah Kopi Mandiri"
+          name="Madu Hutan Liar Murni Flores"
+          price="Rp 115.000"
+          priceBefore="Rp 140.000"
+          seller="Koperasi Tani Hutan Bersama"
           rating={4.8}
-          sold={120}
+          sold={512}
         />
         <Card
-          image={Images}
+          image={Images4}
           address="Malang, Jatim"
-          name="Kopi Arabika Gayo Organik…"
-          price="Rp 68.000"
-          priceBefore="Rp 85.000"
-          seller="UMKM Berkah Kopi Mandiri"
-          rating={4.8}
-          sold={120}
+          name="Kripik Tempe Renyah Oven"
+          price="Rp 52.000"
+          priceBefore="Rp 65.000"
+          seller="UMKM Dapur Barokah"
+          rating={4.9}
+          sold={890}
         />
       </div>
       <div className="section-bottom-showcase-link">
