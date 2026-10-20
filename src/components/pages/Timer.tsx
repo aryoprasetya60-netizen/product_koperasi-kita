@@ -1,4 +1,7 @@
 import { useEffect, useState } from "react";
+import stopSvg from "../../assets/stop.svg";
+import pauseSvg from "../../assets/pause.svg";
+import startSvg from "../../assets/start.svg";
 
 function Timer() {
   const [seconds, setSeconds] = useState(0);
@@ -22,7 +25,7 @@ function Timer() {
   return (
     <div className="bg-red-950 text-4xl p-10 flex-col gap-4 rounded-md mx-auto mt-4">
       <div className="bg-lime-300 rounded-md text-center py-8 mb-4">
-        <h1>{seconds}</h1>
+        <h1>{seconds} seconds</h1>
       </div>
 
       <div className="grid grid-cols-2 gap-4">
@@ -30,20 +33,20 @@ function Timer() {
           className="bg-amber-100 p-4 rounded-md hover:bg-amber-300"
           onClick={() => setIsRunning(true)}
         >
-          RESUME
+          <img src={startSvg} alt="Start" className="w-8 h-8 mx-auto" />
         </button>
         <button
           className="bg-amber-100 p-4 rounded-md hover:bg-amber-300"
           onClick={() => setIsRunning(false)}
         >
-          PAUSE
+          <img src={pauseSvg} alt="Pause" className="w-8 h-8 mx-auto" />
         </button>
         {!isRunning && (
           <button
             className="bg-amber-100 p-4 rounded-md col-span-2 hover:bg-amber-300"
             onClick={reset}
           >
-            RESET
+            <img src={stopSvg} alt="Reset" className="w-8 h-8 mx-auto" />
           </button>
         )}
       </div>

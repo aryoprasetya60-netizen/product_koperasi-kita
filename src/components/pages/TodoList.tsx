@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import TodoListItem from "../todolist/todoListItem";
 
 interface Todo {
   id: number;
@@ -6,74 +7,235 @@ interface Todo {
   isCompleted: boolean;
 }
 
+type TodoFilter = "all" | "todo" | "done";
+
 const todoList: Todo[] = [
-  {
-    id: 1,
-    description: "buka mata",
-    isCompleted: false,
-  },
-  {
-    id: 2,
-    description: "bangun pagi",
-    isCompleted: false,
-  },
-  {
-    id: 3,
-    description: "gosok gigi",
-    isCompleted: false,
-  },
-  {
-    id: 4,
-    description: "tidur",
-    isCompleted: false,
-  },
+  { id: 1, description: "Buka mata", isCompleted: false },
+  { id: 2, description: "Bangun pagi", isCompleted: false },
+  { id: 3, description: "Gosok gigi", isCompleted: false },
+  { id: 4, description: "Tidur", isCompleted: false },
 ];
 
 function TodoList() {
-  const [value, setValue] = useState("");
+  const [description, setDescription] = useState("");
   const [todos, setTodos] = useState<Todo[]>(todoList);
+  const [isCompleted, setIsCompleted] = useState(false);
+  const [editId, setEditId] = useState<number | null>(null);
+  const [filter, setFilter] = useState<TodoFilter>("all");
+  const isEditing = editId != null;
 
-  // function untuk melakukan updating todolist
+  const todoCounter = useMemo(
+    () => todos.filter((todo) => !todo.isCompleted).length,
+    [todos],
+  );
+  const doneCounter = useMemo(
+    () => todos.filter((todo) => todo.isCompleted).length,
+    [todos],
+  );
+
+  const filteredTodos = useMemo(() => {
+    if (filter === "todo") {
+      return todos.filter((todo) => !todo.isCompleted);
+    }
+
+    if (filter === "done") {
+      return todos.filter((todo) => todo.isCompleted);
+    }
+
+    return todos;
+  }, [todos, filter]);
+
+  // Menambahkan tugas baru
   function handleAddTodo() {
+    if (!description.trim()) return;
+
     setTodos((prev) => [
       ...prev,
-      { id: Date.now(), description: value, isCompleted: true },
+      {
+        id: Date.now(),
+        description: description.trim(),
+        isCompleted: isCompleted,
+      },
     ]);
 
-    setValue("");
+    setDescription("");
+    setIsCompleted(false);
+  }
+
+  // Menyimpan perubahan tugas
+  function handleSaveTodo() {
+    if (!description.trim() || editId === null) return;
+
+    setTodos((prev) =>
+      prev.map((todo) =>
+        todo.id === editId
+          ? {
+              ...todo,
+              description: description.trim(),
+              isCompleted,
+            }
+          : todo,
+      ),
+    );
+
+    setDescription("");
+    setIsCompleted(false);
+    setEditId(null);
+  }
+
+  // Menghapus tugas
+  function handleDeleteTodo(id: number) {
+    setTodos((prev) => prev.filter((todo) => todo.id !== id));
+
+    if (editId === id) {
+      setDescription("");
+      setIsCompleted(false);
+      setEditId(null);
+    }
+  }
+
+  // Memasukkan data tugas ke input untuk diedit
+  function handleEditTodo(todo: Todo) {
+    setDescription(todo.description);
+    setIsCompleted(todo.isCompleted);
+    setEditId(todo.id);
+  }
+
+  // Mengubah status selesai tugas
+
+  function handleCancelEdit() {
+    setDescription("");
+    setIsCompleted(false);
+    setEditId(null);
   }
 
   return (
-    <div className="flex flex-col items-center justify-center p-30">
-      {/* title */}
-      <h1>Todo List Batch 10</h1>
+    <div className="min-h-screen bg-gray-100 px-4 py-10 sm:py-16">
+      <div className="mx-auto w-full max-w-xl rounded-2xl bg-white p-6 shadow-lg sm:p-8">
+        {/* Header */}
+        <div className="mb-6 text-center">
+          <h1 className="text-3xl font-bold tracking-tight text-gray-800">
+            Todo List
+          </h1>
+        </div>
 
-      {/* user input */}
-      <div>
-        <input
-          type="text"
-          placeholder="description"
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
-        />
+        {/* Form Add dan Edit */}
+        <form
+          className="mb-6 space-y-3"
+          onSubmit={(e) => {
+            e.preventDefault();
+
+            if (isEditing) {
+              handleSaveTodo();
+            } else {
+              handleAddTodo();
+            }
+          }}
+        >
+          <input
+            type="text"
+            placeholder="Masukkan Todo?"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            className="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm text-gray-800 outline-none  placeholder:text-gray-400"
+          />
+
+          <select
+            value={isCompleted ? "done" : "todo"}
+            onChange={(e) => setIsCompleted(e.target.value === "done")}
+            className="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm text-gray-700"
+          >
+            <option value="todo">Todo</option>
+            <option value="done">Done</option>
+          </select>
+
+          <div className="flex flex-wrap gap-2">
+            <button
+              type="submit"
+              className={`flex-1 rounded-xl px-5 py-3 font-medium text-white ${
+                isEditing
+                  ? "bg-emerald-600 hover:bg-emerald-700"
+                  : "bg-blue-600 hover:bg-blue-700"
+              }`}
+            >
+              {isEditing ? "Save Changes" : "+ Add Task"}
+            </button>
+
+            {isEditing && (
+              <button
+                type="button"
+                onClick={handleCancelEdit}
+                className="rounded-xl border border-gray-300 px-4 py-3 font-medium text-gray-600 hover:bg-gray-100"
+              >
+                Cancel
+              </button>
+            )}
+          </div>
+        </form>
+
+        {/* Ringkasan Tugas */}
+        <div className="mb-4 flex items-center justify-between gap-3">
+          <h2 className="text-lg font-semibold text-gray-800">Daftar Tugas</h2>
+
+          <div className="grid grid-cols-3 gap-2">
+            <button
+              type="button"
+              onClick={() => setFilter("all")}
+              className={`rounded-full px-3 py-2 text-xs font-semibold transition ${
+                filter === "all"
+                  ? "bg-blue-600 text-white"
+                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+              }`}
+            >
+              Show All ({todos.length})
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setFilter("todo")}
+              className={`rounded-full px-3 py-2 text-xs font-semibold transition ${
+                filter === "todo"
+                  ? "bg-amber-500 text-white"
+                  : "bg-amber-100 text-amber-700 hover:bg-amber-200"
+              }`}
+            >
+              Todo ({todoCounter})
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setFilter("done")}
+              className={`rounded-full px-3 py-2 text-xs font-semibold transition ${
+                filter === "done"
+                  ? "bg-green-600 text-white"
+                  : "bg-green-100 text-green-700 hover:bg-green-200"
+              }`}
+            >
+              Done ({doneCounter})
+            </button>
+          </div>
+        </div>
+
+        {/* Daftar Todo */}
+        {filteredTodos.length > 0 ? (
+          <ul className="space-y-3">
+            {filteredTodos.map((todo, index) => (
+              <TodoListItem
+                key={todo.id}
+                todo={todo}
+                index={index}
+                isEditing={editId === todo.id}
+                handleEditTodo={handleEditTodo}
+                handleDeleteTodo={handleDeleteTodo}
+              />
+            ))}
+          </ul>
+        ) : (
+          <div className="rounded-xl border border-dashed border-gray-300 px-4 py-10 text-center">
+            <p className="font-medium text-gray-600">Belum ada tugas</p>
+          </div>
+        )}
       </div>
-
-      {/* bagian tampilan todolist */}
-      <ul>
-        {todos.map((val) => {
-          return (
-            <li key={val.id}>
-              {val.id} - {val.description} - {val.isCompleted ? "done" : "todo"}
-            </li>
-          );
-        })}
-      </ul>
-      <button
-        onClick={handleAddTodo}
-        className="bg-amber-900 text-amber-100 mt-3 text-2xl w-fit p-5"
-      >
-        Add
-      </button>
     </div>
   );
 }

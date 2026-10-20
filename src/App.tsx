@@ -6,7 +6,7 @@ import Timer from "./components/pages/Timer";
 function App() {
   return (
     <section>
-      <Timer></Timer>
+      <TodoList></TodoList>
     </section>
   );
 }
