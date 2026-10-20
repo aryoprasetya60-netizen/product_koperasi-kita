@@ -1,20 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import TodoListItem from "../todolist/todoListItem";
-
-interface Todo {
-  id: number;
-  description: string;
-  isCompleted: boolean;
-}
+import { todoList } from "../../data/todos";
+import type { Todo } from "../../types/todo.type";
 
 type TodoFilter = "all" | "todo" | "done";
-
-const todoList: Todo[] = [
-  { id: 1, description: "Buka mata", isCompleted: false },
-  { id: 2, description: "Bangun pagi", isCompleted: false },
-  { id: 3, description: "Gosok gigi", isCompleted: false },
-  { id: 4, description: "Tidur", isCompleted: false },
-];
 
 function TodoList() {
   const [description, setDescription] = useState("");
@@ -22,7 +11,26 @@ function TodoList() {
   const [isCompleted, setIsCompleted] = useState(false);
   const [editId, setEditId] = useState<number | null>(null);
   const [filter, setFilter] = useState<TodoFilter>("all");
+  const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const isEditing = editId != null;
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(search);
+    }, 1000);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [search]);
+
+  useEffect(() => {
+    if (editId !== null) {
+      inputRef.current?.focus();
+    }
+  }, [editId]);
 
   const todoCounter = useMemo(
     () => todos.filter((todo) => !todo.isCompleted).length,
@@ -44,6 +52,12 @@ function TodoList() {
 
     return todos;
   }, [todos, filter]);
+
+  const searchedTodos = useMemo(() => {
+    return filteredTodos.filter((todo) =>
+      todo.description.toLowerCase().includes(debouncedSearch.toLowerCase()),
+    );
+  }, [filteredTodos, debouncedSearch]);
 
   // Menambahkan tugas baru
   function handleAddTodo() {
@@ -133,11 +147,12 @@ function TodoList() {
           }}
         >
           <input
+            ref={inputRef}
             type="text"
             placeholder="Masukkan Todo?"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            className="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm text-gray-800 outline-none  placeholder:text-gray-400"
+            className="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm text-gray-800 outline-none placeholder:text-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
           />
 
           <select
@@ -173,7 +188,16 @@ function TodoList() {
           </div>
         </form>
 
-        {/* Ringkasan Tugas */}
+        {/* Ringkasan Tugas & search */}
+        <div className="mb-5">
+          <input
+            type="text"
+            placeholder="Cari tugas berdasarkan deskripsi..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm text-gray-800 outline-none placeholder:text-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+          />
+        </div>
         <div className="mb-4 flex items-center justify-between gap-3">
           <h2 className="text-lg font-semibold text-gray-800">Daftar Tugas</h2>
 
@@ -217,9 +241,9 @@ function TodoList() {
         </div>
 
         {/* Daftar Todo */}
-        {filteredTodos.length > 0 ? (
+        {searchedTodos.length > 0 ? (
           <ul className="space-y-3">
-            {filteredTodos.map((todo, index) => (
+            {searchedTodos.map((todo, index) => (
               <TodoListItem
                 key={todo.id}
                 todo={todo}
