@@ -31,7 +31,7 @@ function ToDoListItem({
       {/* Deskripsi dan Status */}
       <div className="min-w-0 flex-1">
         <p
-          className={`break-words text-sm font-medium ${
+          className={`text-sm font-medium ${
             todo.isCompleted ? "text-gray-400 line-through" : "text-gray-800"
           }`}
         >

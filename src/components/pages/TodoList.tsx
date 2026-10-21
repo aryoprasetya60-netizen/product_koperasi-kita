@@ -152,7 +152,7 @@ function TodoList() {
             placeholder="Masukkan Todo?"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            className="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm text-gray-800 outline-none placeholder:text-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+            className="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm text-gray-800 outline-none placeholder:text-gray-400"
           />
 
           <select
@@ -192,10 +192,10 @@ function TodoList() {
         <div className="mb-5">
           <input
             type="text"
-            placeholder="Cari tugas berdasarkan deskripsi..."
+            placeholder="Cari deskripsi..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm text-gray-800 outline-none placeholder:text-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+            className="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm text-gray-800 placeholder:text-gray-400"
           />
         </div>
         <div className="mb-4 flex items-center justify-between gap-3">
@@ -229,7 +229,7 @@ function TodoList() {
             <button
               type="button"
               onClick={() => setFilter("done")}
-              className={`rounded-full px-3 py-2 text-xs font-semibold transition ${
+              className={`rounded-full px-3 py-2 text-xs font-semibold  ${
                 filter === "done"
                   ? "bg-green-600 text-white"
                   : "bg-green-100 text-green-700 hover:bg-green-200"
