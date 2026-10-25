@@ -2,45 +2,51 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import TodoListItem from "../todolist/todoListItem";
 import { todoList } from "../../data/todos";
 import type { Todo } from "../../types/todo.type";
+import useArray from "../../hooks/useArray";
+import useDebounce from "../../hooks/useDebounce";
 
 type TodoFilter = "all" | "todo" | "done";
 
 function TodoList() {
   const [description, setDescription] = useState("");
-  const [todos, setTodos] = useState<Todo[]>(todoList);
+  const {
+    items: todos,
+    push,
+    remove,
+    update,
+    clear,
+    move,
+  } = useArray<Todo>(todoList);
   const [isCompleted, setIsCompleted] = useState(false);
   const [editId, setEditId] = useState<number | null>(null);
   const [filter, setFilter] = useState<TodoFilter>("all");
   const [search, setSearch] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState("");
-  const isEditing = editId != null;
+
+  const isEditing = editId !== null;
   const inputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedSearch(search);
-    }, 1000);
+  // Custom Hook untuk debounce search
+  const debouncedSearch = useDebounce(search, 1000);
 
-    return () => {
-      clearTimeout(timer);
-    };
-  }, [search]);
-
+  // Fokus ke input ketika edit
   useEffect(() => {
     if (editId !== null) {
       inputRef.current?.focus();
     }
   }, [editId]);
 
+  // Menghitung jumlah todo dan done
   const todoCounter = useMemo(
     () => todos.filter((todo) => !todo.isCompleted).length,
     [todos],
   );
+
   const doneCounter = useMemo(
     () => todos.filter((todo) => todo.isCompleted).length,
     [todos],
   );
 
+  // Filter berdasarkan status
   const filteredTodos = useMemo(() => {
     if (filter === "todo") {
       return todos.filter((todo) => !todo.isCompleted);
@@ -53,53 +59,53 @@ function TodoList() {
     return todos;
   }, [todos, filter]);
 
+  // Search berdasarkan deskripsi
   const searchedTodos = useMemo(() => {
     return filteredTodos.filter((todo) =>
       todo.description.toLowerCase().includes(debouncedSearch.toLowerCase()),
     );
   }, [filteredTodos, debouncedSearch]);
 
-  // Menambahkan tugas baru
+  // Menambahkan todo baru
   function handleAddTodo() {
     if (!description.trim()) return;
 
-    setTodos((prev) => [
-      ...prev,
-      {
-        id: Date.now(),
-        description: description.trim(),
-        isCompleted: isCompleted,
-      },
-    ]);
+    push({
+      id: Date.now(),
+      description: description.trim(),
+      isCompleted,
+    });
 
     setDescription("");
     setIsCompleted(false);
   }
 
-  // Menyimpan perubahan tugas
+  // Menyimpan perubahan todo
   function handleSaveTodo() {
     if (!description.trim() || editId === null) return;
 
-    setTodos((prev) =>
-      prev.map((todo) =>
-        todo.id === editId
-          ? {
-              ...todo,
-              description: description.trim(),
-              isCompleted,
-            }
-          : todo,
-      ),
-    );
+    const index = todos.findIndex((todo) => todo.id === editId);
+
+    if (index === -1) return;
+
+    update(index, {
+      ...todos[index],
+      description: description.trim(),
+      isCompleted,
+    });
 
     setDescription("");
     setIsCompleted(false);
     setEditId(null);
   }
 
-  // Menghapus tugas
+  // Menghapus todo
   function handleDeleteTodo(id: number) {
-    setTodos((prev) => prev.filter((todo) => todo.id !== id));
+    const index = todos.findIndex((todo) => todo.id === id);
+
+    if (index !== -1) {
+      remove(index);
+    }
 
     if (editId === id) {
       setDescription("");
@@ -108,19 +114,33 @@ function TodoList() {
     }
   }
 
-  // Memasukkan data tugas ke input untuk diedit
+  // Memasukkan data todo ke input untuk diedit
   function handleEditTodo(todo: Todo) {
     setDescription(todo.description);
     setIsCompleted(todo.isCompleted);
     setEditId(todo.id);
   }
 
-  // Mengubah status selesai tugas
-
+  // Membatalkan edit
   function handleCancelEdit() {
     setDescription("");
     setIsCompleted(false);
     setEditId(null);
+  }
+
+  // menghapus semua data todo
+  function handleClearTodos() {
+    clear();
+    setEditId(null);
+    setDescription("");
+    setIsCompleted(false);
+  }
+
+  //mengubah urutan todo
+  function handleMoveTodo(id: number, direction: number) {
+    const currentIndex = todos.findIndex((todo) => todo.id === id);
+
+    move(currentIndex, currentIndex + direction);
   }
 
   return (
@@ -188,7 +208,7 @@ function TodoList() {
           </div>
         </form>
 
-        {/* Ringkasan Tugas & search */}
+        {/* Search */}
         <div className="mb-5">
           <input
             type="text"
@@ -198,6 +218,8 @@ function TodoList() {
             className="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm text-gray-800 placeholder:text-gray-400"
           />
         </div>
+
+        {/* Ringkasan Tugas dan Filter */}
         <div className="mb-4 flex items-center justify-between gap-3">
           <h2 className="text-lg font-semibold text-gray-800">Daftar Tugas</h2>
 
@@ -229,7 +251,7 @@ function TodoList() {
             <button
               type="button"
               onClick={() => setFilter("done")}
-              className={`rounded-full px-3 py-2 text-xs font-semibold  ${
+              className={`rounded-full px-3 py-2 text-xs font-semibold ${
                 filter === "done"
                   ? "bg-green-600 text-white"
                   : "bg-green-100 text-green-700 hover:bg-green-200"
@@ -237,22 +259,62 @@ function TodoList() {
             >
               Done ({doneCounter})
             </button>
+            <button
+              type="button"
+              onClick={handleClearTodos}
+              className="rounded-full px-3 py-2 text-xs font-semibold bg-red-500 text-white"
+            >
+              Clear All
+            </button>
           </div>
         </div>
 
         {/* Daftar Todo */}
         {searchedTodos.length > 0 ? (
           <ul className="space-y-3">
-            {searchedTodos.map((todo, index) => (
-              <TodoListItem
-                key={todo.id}
-                todo={todo}
-                index={index}
-                isEditing={editId === todo.id}
-                handleEditTodo={handleEditTodo}
-                handleDeleteTodo={handleDeleteTodo}
-              />
-            ))}
+            {searchedTodos.map((todo, index) => {
+              const currentIndex = todos.findIndex(
+                (item) => item.id === todo.id,
+              );
+
+              return (
+                <div key={todo.id} className="flex items-center gap-2">
+                  {/* Component TodoListItem yang sudah ada */}
+                  <div className="min-w-0 flex-1">
+                    <TodoListItem
+                      todo={todo}
+                      index={index}
+                      isEditing={editId === todo.id}
+                      handleEditTodo={handleEditTodo}
+                      handleDeleteTodo={handleDeleteTodo}
+                    />
+                  </div>
+
+                  {/* Tombol mengubah urutan Todo */}
+                  <div className="flex shrink-0 flex-col gap-1">
+                    <button
+                      type="button"
+                      onClick={() => handleMoveTodo(todo.id, -1)}
+                      disabled={currentIndex === 0}
+                      className="rounded bg-gray-200 px-3 py-1 text-sm hover:bg-gray-300 disabled:cursor-not-allowed disabled:opacity-40"
+                      aria-label="Move todo up"
+                    >
+                      ↑
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => handleMoveTodo(todo.id, 1)}
+                      disabled={currentIndex === todos.length - 1}
+                      className="rounded bg-gray-200 px-3 py-1 text-sm hover:bg-gray-300 disabled:cursor-not-allowed disabled:opacity-40"
+                      aria-label="Move todo down"
+                    >
+                      ↓
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
           </ul>
         ) : (
           <div className="rounded-xl border border-dashed border-gray-300 px-4 py-10 text-center">
