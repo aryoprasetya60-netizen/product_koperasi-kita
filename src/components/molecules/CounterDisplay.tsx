@@ -1,8 +1,10 @@
-import { useCounter } from "../../context/CounterContext";
+import { useSelector } from "react-redux";
+import type { RootState } from "../../store/store";
 
 function CounterDisplay() {
-  const { state } = useCounter();
-  return <div className="bg-red-900 text-amber-50">Count : {state.count}</div>;
+  const count = useSelector((state: RootState) => state.counter.count);
+
+  return <div className="bg-red-900 text-amber-50">Count : {count} </div>;
 }
 
 export default CounterDisplay;

@@ -8,42 +8,20 @@ import AppProviders from "./providers/AppProviders";
 import { ThemeProvider } from "./context/ThemeContext";
 import ThemeDisplay from "./components/molecules/ThemeDisplay";
 import ThemeControl from "./components/molecules/ThemeControl";
+import { Provider } from "react-redux";
+import CounterDisplay from "./components/molecules/CounterDisplay";
+import { store } from "./store/store";
+import CounterControl from "./components/molecules/CounterControl";
+import TodoList from "./components/pages/TodoList";
 
 function App() {
-  // const isLoading = useLoading(5000);
-
-  // Tanpa menggunakan callback
-  const without = useToggleWithoutCallback();
-  // Menggunakan callback
-  const withCallback = useToggleWithCallback();
-
-  // simpan reference
-  const prevWithout = useRef(without.toggle);
-  const prevWithCallback = useRef(withCallback.toggle);
-
-  useEffect(() => {
-    console.log(
-      "toggle tanpa useCallback, referensinya sama",
-      Object.is(prevWithout.current, without.toggle),
-    );
-
-    console.log(
-      "toggle dengan useCallback, referensinya sama",
-      Object.is(prevWithCallback.current, withCallback.toggle),
-    );
-
-    prevWithout.current = without.toggle;
-    prevWithCallback.current = withCallback.toggle;
-  });
-
   return (
     <div className="flex flex-col">
-      <ThemeProvider>
-        <div className="p-8 space-y-6">
-          <ThemeDisplay />
-          <ThemeControl />
-        </div>
-      </ThemeProvider>
+      <Provider store={store}>
+        <CounterDisplay />
+        <CounterControl />
+        <TodoList />
+      </Provider>
     </div>
   );
 }
