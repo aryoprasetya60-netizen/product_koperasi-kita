@@ -17,7 +17,7 @@ function Counter() {
   }, [count]);
 
   return (
-    <div className="bg-red-950 text-4xl p-10 flex-col gap-4 rounded-md mx-auto mt-4">
+    <div className="bg-red-950 text-4xl p-10 flex-col gap-4 rounded-md mx-auto mt-10">
       <div className="bg-lime-300 rounded-md text-center py-8 mb-4">
         <h1>{count}</h1>
         <p className="text-xl mt-2">Hasil dikali 2: {result}</p>

@@ -1,28 +1,29 @@
-import { useEffect, useRef, useState } from "react";
 import "./App.css";
-import {
-  useToggleWithCallback,
-  useToggleWithoutCallback,
-} from "./hooks/useToggle";
-import AppProviders from "./providers/AppProviders";
-import { ThemeProvider } from "./context/ThemeContext";
-import ThemeDisplay from "./components/molecules/ThemeDisplay";
-import ThemeControl from "./components/molecules/ThemeControl";
-import { Provider } from "react-redux";
-import CounterDisplay from "./components/molecules/CounterDisplay";
-import { store } from "./store/store";
-import CounterControl from "./components/molecules/CounterControl";
 import TodoList from "./components/pages/TodoList";
+import { BrowserRouter, Route, Routes } from "react-router";
+import MainLayout from "./components/layout/MainLayout";
+import Counter from "./components/pages/Counter";
+import Register from "./components/pages/Register";
+import NotFound from "./components/pages/NotFound";
+import Login from "./components/pages/Login";
+import Home from "./components/pages/Home";
 
 function App() {
   return (
-    <div className="flex flex-col">
-      <Provider store={store}>
-        <CounterDisplay />
-        <CounterControl />
-        <TodoList />
-      </Provider>
-    </div>
+    <>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<MainLayout />}>
+            <Route path="/home" element={<Home />} />
+            <Route path="/counter" element={<Counter />} />
+            <Route path="/todos" element={<TodoList />} />
+          </Route>
+          <Route path="/register" element={<Register />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/*" element={<NotFound />} />
+        </Routes>
+      </BrowserRouter>
+    </>
   );
 }
 

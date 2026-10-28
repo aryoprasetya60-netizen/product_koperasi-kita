@@ -4,6 +4,7 @@ import { z } from "zod";
 import { useState } from "react";
 import eye from "../../assets/eye.svg";
 import eyeSlash from "../../assets/eye-slash.svg";
+import { Link } from "react-router";
 
 const loginSchema = z
   .object({
@@ -237,6 +238,14 @@ function Register() {
               REGISTER
             </button>
           </div>
+          <label>
+            <span className="">
+              Sudah punya akun?{" "}
+              <Link to="/login" className="text-blue-500">
+                Login Sekarang{" "}
+              </Link>
+            </span>
+          </label>
         </form>
       </div>
     </div>
