@@ -5,6 +5,11 @@ import { useState } from "react";
 import eye from "../../assets/eye.svg";
 import eyeSlash from "../../assets/eye-slash.svg";
 import { Link, useNavigate } from "react-router";
+import { loginSuccess } from "../../features/authSlice";
+import { useDispatch } from "react-redux";
+import type { AppDispatch } from "../../store/store";
+import { login } from "../../services/auth.services";
+import type { LoginPayload } from "../../types/auth.types";
 
 const loginSchema = z.object({
   username: z
@@ -17,6 +22,7 @@ const loginSchema = z.object({
 type FormValues = z.infer<typeof loginSchema>;
 
 function Login() {
+  const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const {
     register,
@@ -26,10 +32,21 @@ function Login() {
     resolver: zodResolver(loginSchema),
   });
 
-  const onSubmit: SubmitHandler<FormValues> = (data) => {
-    console.log(data);
+  const onSubmit: SubmitHandler<FormValues> = async (data: LoginPayload) => {
+    try {
+      // proses login ke backend
+      const res = await login(data);
 
-    navigate("/");
+      console.log("LOGIN RESPONSE:", res);
+      // proses set state global
+      dispatch(loginSuccess(res));
+      navigate("/");
+    } catch (error) {
+      console.log("error : ", error);
+      console.log(
+        `berhasil submit username : ${data.username} dan password : ${data.password}`,
+      );
+    }
   };
 
   const [showPassword, setShowPassword] = useState(false);

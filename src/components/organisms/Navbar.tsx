@@ -1,6 +1,17 @@
-import { Link } from "react-router";
+import { useDispatch } from "react-redux";
+import { Link, useNavigate } from "react-router";
+import { logout } from "../../features/authSlice";
+import type { AppDispatch } from "../../store/store";
 
 function Navbar() {
+  const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    dispatch(logout());
+    navigate("/login");
+  };
+
   return (
     <nav className="bg-neutral-primary fixed w-full z-20 top-0 inset-s-0 border-b border-default mb-5">
       <div className="max-w-7xl flex flex-wrap items-center justify-between mx-auto p-4">
@@ -66,11 +77,30 @@ function Navbar() {
               Counter
             </Link>
             <Link
+              to="/todos"
+              className="block py-2 px-3 text-heading rounded hover:bg-neutral-tertiary md:hover:bg-transparent md:border-0 md:hover:text-fg-brand md:p-0 md:dark:hover:bg-transparent"
+            >
+              Todos
+            </Link>
+            <Link
+              to="/users"
+              className="block py-2 px-3 text-heading rounded hover:bg-neutral-tertiary md:hover:bg-transparent md:border-0 md:hover:text-fg-brand md:p-0 md:dark:hover:bg-transparent"
+            >
+              users
+            </Link>
+            <Link
               to="/login"
               className="block py-2 px-3 text-heading rounded hover:bg-neutral-tertiary md:hover:bg-transparent md:border-0 md:hover:text-fg-brand md:p-0 md:dark:hover:bg-transparent"
             >
               Login
             </Link>
+            <button
+              onClick={handleLogout}
+              type="submit"
+              className="block py-2 px-3 text-heading rounded hover:bg-neutral-tertiary md:hover:bg-transparent md:border-0 md:hover:text-fg-brand md:p-0 md:dark:hover:bg-transparent"
+            >
+              Logout
+            </button>
           </ul>
         </div>
       </div>

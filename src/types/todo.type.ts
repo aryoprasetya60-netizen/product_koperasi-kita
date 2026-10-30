@@ -3,3 +3,10 @@ export interface Todo {
   description: string;
   isCompleted: boolean;
 }
+
+export interface TodoJsonPlaceholder {
+  userId: number;
+  id: number;
+  title: string;
+  completed: boolean;
+}

@@ -1,19 +1,23 @@
-import type { Todo } from "../../types/todo.type";
+import type { Todo, TodoJsonPlaceholder } from "../../types/todo.type";
 
 interface TodoListItemProps {
-  todo: Todo;
+  todo: TodoJsonPlaceholder;
+  handleEditTodo: (id: number) => void;
   handleDeleteTodo: (id: number) => void;
-  handleEditTodo: (todo: Todo) => void;
+  handleGetByIdTodo: (id: number) => void;
+  // handleEditTodo: (todo: TodoJsonPlaceholder) => void;
 }
 
 function ToDoListItem({
   todo,
   handleDeleteTodo,
   handleEditTodo,
+  handleGetByIdTodo,
 }: TodoListItemProps) {
   return (
     <li key={todo.id}>
-      {todo.id} - {todo.description} - {todo.isCompleted ? "done" : "todo"}
+      {todo.userId} - {todo.id} - {todo.title} -{" "}
+      {todo.completed ? "done" : "todo"}
       <button
         className="p-2 bg-red-600"
         onClick={() => handleDeleteTodo(todo.id)}
@@ -22,9 +26,15 @@ function ToDoListItem({
       </button>
       <button
         className="p-2 bg-yellow-600"
-        onClick={() => handleEditTodo(todo)}
+        onClick={() => handleEditTodo(todo.id)}
       >
         Edit
+      </button>
+      <button
+        className="p-2 bg-green-600"
+        onClick={() => handleGetByIdTodo(todo.id)}
+      >
+        GetById
       </button>
     </li>
   );

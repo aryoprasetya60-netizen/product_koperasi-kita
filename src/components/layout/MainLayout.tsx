@@ -6,7 +6,7 @@ function MainLayout() {
   return (
     <div className="flex flex-col gap-3">
       <Navbar />
-      <main className="mt-5">
+      <main className="mt-20">
         <Outlet />
       </main>
       <Footer />
